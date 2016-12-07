@@ -1,0 +1,19 @@
+{
+  "name": "ewd-vista-taskman-monitor",
+  "version": "1.0.1",
+  "description": "EWD VistA: Taskman monitor module",
+  "main": "index.js",
+  "author": "Alexis Carlson & Sam Habiel",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shabiel/ewd-vista-taskman-monitor.git"
+  },
+  "peerDependencies": {
+    "ewd-vista": "1.0.1"
+  },
+  "devDependencies": {
+    "eslint": "~3.9",
+    "eslint-plugin-json": "~1.2"
+  }
+}
