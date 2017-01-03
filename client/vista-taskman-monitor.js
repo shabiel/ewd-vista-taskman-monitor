@@ -12,34 +12,40 @@ clientMethods.showTasks = function(EWD) {
   // Clear the page
   $('#main-content').html('');
   
+  let html = '';
+  html = html + '<div id="taskman-monitor" class="row collapse">';
+  html = html + '<div class="main col-md-5">';
+  html = html + '<h2 class="sub-header">Taskman Tasks</h2>';
+  html = html + '<div class="table-responsive">';
+  html = html + '<table class="table table-striped">';
+  html = html + '<thead>';
+  html = html + '<tr>';
+  html = html + '<td>Number</td>';
+  html = html + '<td>Name</td>';
+  html = html + '<td>Status</td>';
+  html = html + '<td>Scheduled</td>';
+  html = html + '<td>Updated</td>';
+  html = html + '</tr>';
+  html = html + '</thead>';
+  html = html + '<tbody>';
+  html = html + '</tbody>';
+  html = html + '</table>';
+  html = html + '</div>';
+  html = html + '</div>';
+  html = html + '</div>';
+  
+  $('#main-content').append(html);
+  $('#taskman-monitor').append(html).show();
+  
   let messageObj = {
     service: 'ewd-vista-taskman-monitor',
     type: 'tasks'
   };
   EWD.send(messageObj, function(responseObj) {
-    let tasks = responseObj.message.tasks;
-    // console.log(tasks);
+    if (responseObj.finished == false) {
+      let task = responseObj.message.task;
     
-    let html='<div id="taskman-monitor" class="row collapse"></div>';
-    $('#main-content').append(html);
-    
-    html = '';
-    html = html + '<div class="main col-md-5">';
-    html = html + '<h2 class="sub-header">Taskman Tasks</h2>';
-    html = html + '<div class="table-responsive">';
-    html = html + '<table class="table table-striped">';
-    html = html + '<thead>';
-    html = html + '<tr>';
-    html = html + '<td>Number</td>';
-    html = html + '<td>Name</td>';
-    html = html + '<td>Status</td>';
-    html = html + '<td>Scheduled</td>';
-    html = html + '<td>Updated</td>';
-    html = html + '</tr>';
-    html = html + '</thead>';
-    html = html + '<tbody>';
-    
-    tasks.forEach(function(task, index, array) {
+      let html = '';
       html = html + '<tr>';
       html = html + '<td>' + task.number + '</td>';
       html = html + '<td>' + task.fields['0.03'] + '</td>';
@@ -47,14 +53,9 @@ clientMethods.showTasks = function(EWD) {
       html = html + '<td>' + clientMethods.horologToExternal(task.fields['0'].split('^')[5]) + '</td>';
       html = html + '<td>' + clientMethods.horologToExternal(task.fields['0.1'].split('^')[1]) + '</td>';
       html = html + '</tr>';
-    });
     
-    html = html + '</tbody>';
-    html = html + '</table>';
-    html = html + '</div>';
-    html = html + '</div>';
-    
-    $('#taskman-monitor').append(html).show();
+      $('#taskman-monitor tbody').append(html);
+    }
   });
 };
 
