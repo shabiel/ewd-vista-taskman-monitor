@@ -3,19 +3,115 @@ let clientMethods = {};
 // Set up menu
 clientMethods.prep = function(EWD) {
   $('#app-taskman-monitor').on('click', function(e) {
+    // Clear the page
+    $('#main-content').html('');
+    
+    let html = '';
+    html = html + '<div id="taskman-monitor" class="row">';
+    html = html + '</div>';
+    
+    $('#main-content').append(html);
+    
+    clientMethods.showStatus(EWD);
     clientMethods.showTasks(EWD);
-    return false;
   });
 };
 
-clientMethods.showTasks = function(EWD) {
-  // Clear the page
-  $('#main-content').html('');
-  
+clientMethods.showStatus = function(EWD) {
   let html = '';
-  html = html + '<div id="taskman-monitor" class="row collapse">';
-  html = html + '<div class="main col-md-5">';
-  html = html + '<h2 class="sub-header">Taskman Tasks</h2>';
+  html = html + '<div id="taskman-info" class="main col-md-6">';
+  html = html + '</div>';
+  
+  $('#taskman-monitor').append(html);
+  
+  let messageObj = {
+    service: 'ewd-vista-taskman-monitor',
+    type: 'status'
+  };
+  EWD.send(messageObj, function(responseObj) {
+    let ztsch = responseObj.message.ztsch;
+    let taskman = {
+      cpuVolumePair: Object.keys(ztsch.SUB)[0],
+      status: '',
+      submanagers: 0,
+      tasks: {
+        scheduled: 0,
+        partition: 0,
+        device: 0,
+        running: 0
+      }
+    };
+    if (ztsch.STATUS) {
+      taskman.status = ztsch.STATUS[Object.keys(ztsch.STATUS)[0]].split('^').slice(-1)[0];
+    }
+    Object.keys(ztsch.SUB[taskman.cpuVolumePair]).forEach(function(element, index, array) {
+      if (element > 0) taskman.submanagers++;
+    });
+    Object.keys(ztsch).forEach(function(time, timesIndex, timesArray) {
+      if (parseInt(time) > 0) {
+        Object.keys(ztsch[time]).forEach(function(task, tasksIndex, tasksArray) {
+          taskman.tasks.scheduled++;
+        });
+      }
+    });
+    if (ztsch.JOB) {
+      taskman.tasks.partition = Object.keys(ztsch.JOB).length;
+    }
+    if (ztsch.IO) {
+      taskman.tasks.device = Object.keys(ztsch.IO).length;
+    }
+    if (ztsch.TASK) {
+      taskman.tasks.running = Object.keys(ztsch.TASK).length;
+    }
+    
+    switch (taskman.status) {
+      case 'Main Loop': {
+        if (ztsch.WAIT) taskman.status = 'Entering Wait State';
+        if (ztsch.STOP) taskman.status = 'Stopping';
+        break;
+      }
+      case 'Taskman Job Limit Reached': {
+        taskman.status = 'Job Limit Reached';
+        break;
+      }
+      case 'Taskman Waiting': {
+        if (ztsch.WAIT) taskman.status = 'Waiting';
+        else taskman.status = 'Starting Up';
+        break;
+      }
+      case 'Startup Hang': {
+        break;
+      }
+      case '': {
+        taskman.status = 'Stopped';
+        break;
+      }
+      default: {
+        taskman.status = 'Unknown';
+      }
+    }
+    
+    // console.log(taskman);
+    // console.log(ztsch);
+    
+    let html = '';
+    html = html + '<h3 class="sub-header">Taskman Info</h3>';
+    html = html + '<h5><strong>CPU-Volume Pair:</strong> ' + taskman.cpuVolumePair + '</h5>';
+    html = html + '<h5><strong>Status:</strong> ' + taskman.status + '</h5>';
+    html = html + '<h5><strong>Free Submanagers:</strong> ' + taskman.submanagers + '</h5>';
+    html = html + '<h5><strong>Tasks Scheduled:</strong> ' + taskman.tasks.scheduled + '</h5>';
+    html = html + '<h5><strong>Tasks Waiting For Partition:</strong> ' + taskman.tasks.partition + '</h5>';
+    html = html + '<h5><strong>Tasks Waiting For Device:</strong> ' + taskman.tasks.device + '</h5>';
+    html = html + '<h5><strong>Tasks Running:</strong> ' + taskman.tasks.running + '</h5>';
+    
+    $('#taskman-info').append(html);
+  });
+}
+
+clientMethods.showTasks = function(EWD) {
+  let html = '';
+  html = html + '<div id="taskman-tasks" class="main col-md-6">';
+  html = html + '<h3 class="sub-header">Taskman Tasks</h3>';
   html = html + '<div class="table-responsive">';
   html = html + '<table class="table table-striped">';
   html = html + '<thead>';
@@ -32,10 +128,8 @@ clientMethods.showTasks = function(EWD) {
   html = html + '</table>';
   html = html + '</div>';
   html = html + '</div>';
-  html = html + '</div>';
   
-  $('#main-content').append(html);
-  $('#taskman-monitor').append(html).show();
+  $('#taskman-monitor').append(html);
   
   let messageObj = {
     service: 'ewd-vista-taskman-monitor',
@@ -54,7 +148,7 @@ clientMethods.showTasks = function(EWD) {
       html = html + '<td>' + clientMethods.horologToExternal(task.fields['0.1'].split('^')[1]) + '</td>';
       html = html + '</tr>';
     
-      $('#taskman-monitor tbody').append(html);
+      $('#taskman-tasks tbody').append(html);
     }
   });
 };
@@ -71,19 +165,32 @@ clientMethods.horologToExternal = function(horoTimeStamp) {
   return new Date(epochTime);
 };
 
+clientMethods.statusCodes = {
+  '0': 'Incomplete',
+  '1': 'Scheduled',
+  '2': 'Being inspected',
+  '3': 'Waiting for partition',
+  '4': 'Being prepared',
+  '5': 'Running',
+  '6': 'Completed',
+  'A': 'Waiting for device',
+  'B': 'Rejected',
+  'C': 'Error',
+  'D': 'Stopped by user',
+  'E': 'Interrupted while running',
+  'F': 'Uscheduled',
+  'G': 'Waiting for link to volume',
+  'H': 'Edited but not rescheduled',
+  'I': 'Discarded by Taskman',
+  'J': 'Being edited',
+  'K': 'Created but not scheduled',
+  'L': 'Task caused Submanager error',
+  'M': 'Waiting for Compute Server partition'
+}
+
 clientMethods.taskStatus = function(code) {
-  let status = '';
-  
-  switch (code) {
-    case '1':
-      status = 'Scheduled';
-      break;
-    case '6':
-      status = 'Completed';
-      break;
-    default:
-      status = code;
-  }
+  let status = clientMethods.statusCodes[code];
+  if (!status) status = code;
   
   return status;
 };
