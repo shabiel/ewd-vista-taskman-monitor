@@ -1,16 +1,15 @@
 let clientMethods = {};
 
-// Set up menu
+// Load CSS & set up nav
 clientMethods.prep = function(EWD) {
+  $('head').append('<link href="assets/stylesheets/taskman-monitor.css" rel="stylesheet" />')
+  $('.app-nav .dropdown-menu').append('<li><a href="#" id="app-taskman-monitor">Taskman Monitor</a></li>');
+  
   $('#app-taskman-monitor').on('click', function(e) {
     // Clear the page
     $('#main-content').html('');
     
-    let html = '';
-    html = html + '<div id="taskman-monitor" class="row">';
-    html = html + '</div>';
-    
-    $('#main-content').append(html);
+    $('#main-content').append('<div id="taskman-monitor" class="row"></div>');
     
     clientMethods.showStatus(EWD);
     clientMethods.showTasks(EWD);
@@ -67,7 +66,7 @@ clientMethods.showStatus = function(EWD) {
     switch (taskman.status) {
       case 'Main Loop': {
         if (ztsch.WAIT) taskman.status = 'Entering Wait State';
-        if (ztsch.STOP) taskman.status = 'Stopping';
+        else if (ztsch.STOP && ztsch.STOP.MGR) taskman.status = 'Stopping';
         break;
       }
       case 'Taskman Job Limit Reached': {
@@ -76,7 +75,7 @@ clientMethods.showStatus = function(EWD) {
       }
       case 'Taskman Waiting': {
         if (ztsch.WAIT) taskman.status = 'Waiting';
-        else taskman.status = 'Starting Up';
+        else taskman.status = 'Exiting Wait State';
         break;
       }
       case 'Startup Hang': {
