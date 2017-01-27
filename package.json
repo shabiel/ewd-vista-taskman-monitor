@@ -17,13 +17,11 @@
     "eslint-plugin-json": "~1.2"
   },
   "ewd_vista": {
-    "name": "Taskman Monitor",
     "module": "ewd-vista-taskman-monitor",
     "parentModule": "ewd-vista",
-    "securityKeys": ["HOWDY", "DO"],
-    "clientJs": {
-      "constantName": "taskmanMonitor",
-      "scriptName": "vista-taskman-monitor"
-    }
+    "name": "Taskman Monitor",
+    "htmlName": "taskman-monitor",
+    "sortOrder": "20",
+    "securityKeys": ["TASKMAN", "MONITOR"]
   }
 }

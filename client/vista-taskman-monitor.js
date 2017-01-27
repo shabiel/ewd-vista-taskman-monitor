@@ -3,9 +3,8 @@ let clientMethods = {};
 // Load CSS & set up nav
 clientMethods.prep = function(EWD) {
   $('head').append('<link href="assets/stylesheets/taskman-monitor.css" rel="stylesheet" />')
-  $('.app-nav .dropdown-menu').append('<li><a href="#" id="app-taskman-monitor">Taskman Monitor</a></li>');
   
-  $('#app-taskman-monitor').on('click', function(e) {
+  $('body').on('click', '#app-taskman-monitor', function() {
     // Clear the page
     $('#main-content').html('');
     
