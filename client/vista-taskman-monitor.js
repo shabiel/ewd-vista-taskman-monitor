@@ -1,7 +1,7 @@
-let clientMethods = {};
+taskmanMonitor = {};
 
 // Load CSS & set up nav
-clientMethods.prep = function(EWD) {
+taskmanMonitor.prep = function(EWD) {
   $('head').append('<link href="assets/stylesheets/taskman-monitor.css" rel="stylesheet" />')
   
   $('body').on('click', '#app-taskman-monitor', function() {
@@ -10,12 +10,12 @@ clientMethods.prep = function(EWD) {
     
     $('#main-content').append('<div id="taskman-monitor" class="row"></div>');
     
-    clientMethods.showStatus(EWD);
-    clientMethods.showTasks(EWD);
+    taskmanMonitor.showStatus(EWD);
+    taskmanMonitor.showTasks(EWD);
   });
 };
 
-clientMethods.showStatus = function(EWD) {
+taskmanMonitor.showStatus = function(EWD) {
   let html = '';
   html = html + '<div id="taskman-info" class="main col-md-6">';
   html = html + '</div>';
@@ -106,7 +106,7 @@ clientMethods.showStatus = function(EWD) {
   });
 }
 
-clientMethods.showTasks = function(EWD) {
+taskmanMonitor.showTasks = function(EWD) {
   let html = '';
   html = html + '<div id="taskman-tasks" class="main col-md-6">';
   html = html + '<h3 class="sub-header">Taskman Tasks</h3>';
@@ -141,9 +141,9 @@ clientMethods.showTasks = function(EWD) {
       html = html + '<tr>';
       html = html + '<td>' + task.number + '</td>';
       html = html + '<td>' + task.fields['0.03'] + '</td>';
-      html = html + '<td>' + clientMethods.taskStatus(task.fields['0.1'].split('^')[0]) + '</td>';
-      html = html + '<td>' + clientMethods.horologToExternal(task.fields['0'].split('^')[5]) + '</td>';
-      html = html + '<td>' + clientMethods.horologToExternal(task.fields['0.1'].split('^')[1]) + '</td>';
+      html = html + '<td>' + taskmanMonitor.taskStatus(task.fields['0.1'].split('^')[0]) + '</td>';
+      html = html + '<td>' + taskmanMonitor.horologToExternal(task.fields['0'].split('^')[5]) + '</td>';
+      html = html + '<td>' + taskmanMonitor.horologToExternal(task.fields['0.1'].split('^')[1]) + '</td>';
       html = html + '</tr>';
     
       $('#taskman-tasks tbody').append(html);
@@ -151,7 +151,7 @@ clientMethods.showTasks = function(EWD) {
   });
 };
 
-clientMethods.horologToExternal = function(horoTimeStamp) {
+taskmanMonitor.horologToExternal = function(horoTimeStamp) {
   let horoZero = -4070880000000;
   let horoDays = horoTimeStamp.split(',')[0];
   let horoSecs = horoTimeStamp.split(',')[1];
@@ -163,7 +163,7 @@ clientMethods.horologToExternal = function(horoTimeStamp) {
   return new Date(epochTime);
 };
 
-clientMethods.statusCodes = {
+taskmanMonitor.statusCodes = {
   '0': 'Incomplete',
   '1': 'Scheduled',
   '2': 'Being inspected',
@@ -186,11 +186,11 @@ clientMethods.statusCodes = {
   'M': 'Waiting for Compute Server partition'
 }
 
-clientMethods.taskStatus = function(code) {
-  let status = clientMethods.statusCodes[code];
+taskmanMonitor.taskStatus = function(code) {
+  let status = taskmanMonitor.statusCodes[code];
   if (!status) status = code;
   
   return status;
 };
 
-module.exports = clientMethods;
+// module.exports = taskmanMonitor;

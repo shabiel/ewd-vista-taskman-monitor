@@ -20,6 +20,7 @@
     "module": "ewd-vista-taskman-monitor",
     "parentModule": "ewd-vista",
     "name": "Taskman Monitor",
+    "clientModuleName": "taskmanMonitor",
     "htmlName": "taskman-monitor",
     "sortOrder": "20",
     "securityKeys": ["TASKMAN", "MONITOR"]
