@@ -2,8 +2,6 @@ taskmanMonitor = {};
 
 // Load CSS & set up nav
 taskmanMonitor.prep = function(EWD) {
-  $('head').append('<link href="assets/stylesheets/taskman-monitor.css" rel="stylesheet" />')
-  
   $('body').on('click', '#app-taskman-monitor', function() {
     // Clear the page
     $('#main-content').html('');
