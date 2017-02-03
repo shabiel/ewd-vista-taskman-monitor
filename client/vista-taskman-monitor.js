@@ -1,4 +1,4 @@
-taskmanMonitor = {};
+var taskmanMonitor = {};
 
 // Load CSS & set up nav
 taskmanMonitor.prep = function(EWD) {
