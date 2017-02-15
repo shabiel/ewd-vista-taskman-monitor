@@ -140,25 +140,13 @@ taskmanMonitor.showTasks = function(EWD) {
       html = html + '<td>' + task.number + '</td>';
       html = html + '<td>' + task.fields['0.03'] + '</td>';
       html = html + '<td>' + taskmanMonitor.taskStatus(task.fields['0.1'].split('^')[0]) + '</td>';
-      html = html + '<td>' + taskmanMonitor.horologToExternal(task.fields['0'].split('^')[5]) + '</td>';
-      html = html + '<td>' + taskmanMonitor.horologToExternal(task.fields['0.1'].split('^')[1]) + '</td>';
+      html = html + '<td>' + vista.horologToExternal(task.fields['0'].split('^')[5]) + '</td>';
+      html = html + '<td>' + vista.horologToExternal(task.fields['0.1'].split('^')[1]) + '</td>';
       html = html + '</tr>';
     
       $('#taskman-tasks tbody').append(html);
     }
   });
-};
-
-taskmanMonitor.horologToExternal = function(horoTimeStamp) {
-  let horoZero = -4070880000000;
-  let horoDays = horoTimeStamp.split(',')[0];
-  let horoSecs = horoTimeStamp.split(',')[1];
-  
-  let epochTime = horoZero;
-  epochTime     = epochTime + horoDays*86400*1000;
-  epochTime     = epochTime + horoSecs*1000;
-  
-  return new Date(epochTime);
 };
 
 taskmanMonitor.statusCodes = {
