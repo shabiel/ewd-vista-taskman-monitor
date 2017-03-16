@@ -3,8 +3,7 @@ var taskmanMonitor = {};
 // Load CSS & set up nav
 taskmanMonitor.prep = function(EWD) {
   $('body').on('click', '#app-taskman-monitor', function() {
-    // Clear the page
-    $('#main-content').html('');
+    vista.switchApp();
     
     $('#main-content').append('<div id="taskman-monitor" class="row"></div>');
     
