@@ -4,9 +4,9 @@ var taskmanMonitor = {};
 taskmanMonitor.prep = function(EWD) {
   $('body').on('click', '#app-taskman-monitor', function() {
     vista.switchApp();
-    
+
     $('#main-content').append('<div id="taskman-monitor" class="row"></div>');
-    
+
     taskmanMonitor.showStatus(EWD);
     taskmanMonitor.showTasks(EWD);
   });
@@ -16,9 +16,9 @@ taskmanMonitor.showStatus = function(EWD) {
   let html = '';
   html = html + '<div id="taskman-info" class="main col-md-6">';
   html = html + '</div>';
-  
+
   $('#taskman-monitor').append(html);
-  
+
   let messageObj = {
     service: 'ewd-vista-taskman-monitor',
     type: 'status'
@@ -58,7 +58,7 @@ taskmanMonitor.showStatus = function(EWD) {
     if (ztsch.TASK) {
       taskman.tasks.running = Object.keys(ztsch.TASK).length;
     }
-    
+
     switch (taskman.status) {
       case 'Main Loop': {
         if (ztsch.WAIT) taskman.status = 'Entering Wait State';
@@ -85,10 +85,10 @@ taskmanMonitor.showStatus = function(EWD) {
         taskman.status = 'Unknown';
       }
     }
-    
+
     // console.log(taskman);
     // console.log(ztsch);
-    
+
     let html = '';
     html = html + '<h3 class="sub-header">Taskman Info</h3>';
     html = html + '<h5><strong>CPU-Volume Pair:</strong> ' + taskman.cpuVolumePair + '</h5>';
@@ -98,7 +98,7 @@ taskmanMonitor.showStatus = function(EWD) {
     html = html + '<h5><strong>Tasks Waiting For Partition:</strong> ' + taskman.tasks.partition + '</h5>';
     html = html + '<h5><strong>Tasks Waiting For Device:</strong> ' + taskman.tasks.device + '</h5>';
     html = html + '<h5><strong>Tasks Running:</strong> ' + taskman.tasks.running + '</h5>';
-    
+
     $('#taskman-info').append(html);
   });
 }
@@ -123,9 +123,9 @@ taskmanMonitor.showTasks = function(EWD) {
   html = html + '</table>';
   html = html + '</div>';
   html = html + '</div>';
-  
+
   $('#taskman-monitor').append(html);
-  
+
   let messageObj = {
     service: 'ewd-vista-taskman-monitor',
     type: 'tasks'
@@ -133,16 +133,16 @@ taskmanMonitor.showTasks = function(EWD) {
   EWD.send(messageObj, function(responseObj) {
     if (responseObj.finished == false) {
       let task = responseObj.message.task;
-    
+
       let html = '';
       html = html + '<tr>';
       html = html + '<td>' + task.number + '</td>';
-      html = html + '<td>' + task.fields['0.03'] + '</td>';
-      html = html + '<td>' + taskmanMonitor.taskStatus(task.fields['0.1'].split('^')[0]) + '</td>';
+      html = html + '<td>' + (task.fields['0.03'] ? task.fields['0.03'] : task.fields['.03']) +  '</td>';
+      html = html + '<td>' + taskmanMonitor.taskStatus(task.fields['0.1'] ? task.fields['0.1'].split('^')[0] : task.fields['.1'].split('^')[0] ) + '</td>';
       html = html + '<td>' + vista.horologToExternal(task.fields['0'].split('^')[5]) + '</td>';
-      html = html + '<td>' + vista.horologToExternal(task.fields['0.1'].split('^')[1]) + '</td>';
+      html = html + '<td>' + vista.horologToExternal(task.fields['0.1'] ? task.fields['0.1'].split('^')[1] : task.fields['.1'].split('^')[1]) + '</td>';
       html = html + '</tr>';
-    
+
       $('#taskman-tasks tbody').append(html);
     }
   });
@@ -174,8 +174,9 @@ taskmanMonitor.statusCodes = {
 taskmanMonitor.taskStatus = function(code) {
   let status = taskmanMonitor.statusCodes[code];
   if (!status) status = code;
-  
+
   return status;
 };
 
 // module.exports = taskmanMonitor;
+/*# sourceMappingURL=vista-taskman-monitor.js */
