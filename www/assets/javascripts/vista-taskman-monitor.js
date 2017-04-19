@@ -101,7 +101,7 @@ taskmanMonitor.showStatus = function(EWD) {
 
     $('#taskman-info').append(html);
   });
-}
+};
 
 taskmanMonitor.showTasks = function(EWD) {
   let html = '';
@@ -169,7 +169,7 @@ taskmanMonitor.statusCodes = {
   'K': 'Created but not scheduled',
   'L': 'Task caused Submanager error',
   'M': 'Waiting for Compute Server partition'
-}
+};
 
 taskmanMonitor.taskStatus = function(code) {
   let status = taskmanMonitor.statusCodes[code];
@@ -178,5 +178,4 @@ taskmanMonitor.taskStatus = function(code) {
   return status;
 };
 
-// module.exports = taskmanMonitor;
-/*# sourceMappingURL=vista-taskman-monitor.js */
+/*#sourceMappingURL=vista-taskman-monitor.js */
