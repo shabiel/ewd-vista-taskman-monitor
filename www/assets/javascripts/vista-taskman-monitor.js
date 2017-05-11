@@ -3,21 +3,26 @@ var taskmanMonitor = {};
 // Load CSS & set up nav
 taskmanMonitor.prep = function(EWD) {
   $('body').on('click', '#app-taskman-monitor', function() {
-    vista.switchApp();
+    vista.switchApp('taskman-monitor');
 
     $('#main-content').append('<div id="taskman-monitor" class="row"></div>');
 
     taskmanMonitor.showStatus(EWD);
     taskmanMonitor.showTasks(EWD);
+    taskmanMonitor.setupEvents(EWD);
   });
 };
 
 taskmanMonitor.showStatus = function(EWD) {
-  let html = '';
-  html = html + '<div id="taskman-info" class="main col-md-6">';
-  html = html + '</div>';
-
-  $('#taskman-monitor').append(html);
+  if ($('#taskman-info').length) {
+    $('#taskman-info').html('');
+  }
+  else {
+    let html = '';
+    html = html + '<div id="taskman-info" class="main col-md-6">';
+    html = html + '</div>';
+    $('#taskman-monitor').append(html);
+  }
 
   let messageObj = {
     service: 'ewd-vista-taskman-monitor',
@@ -90,7 +95,7 @@ taskmanMonitor.showStatus = function(EWD) {
     // console.log(ztsch);
 
     let html = '';
-    html = html + '<h3 class="sub-header">Taskman Info</h3>';
+    html = html + '<h3 class="sub-header">Taskman Info&nbsp;<i id="tm-refresh-info" class="fa fa-refresh" aria-hidden="true"></i></h3>';
     html = html + '<h5><strong>CPU-Volume Pair:</strong> ' + taskman.cpuVolumePair + '</h5>';
     html = html + '<h5><strong>Status:</strong> ' + taskman.status + '</h5>';
     html = html + '<h5><strong>Free Submanagers:</strong> ' + taskman.submanagers + '</h5>';
@@ -100,14 +105,29 @@ taskmanMonitor.showStatus = function(EWD) {
     html = html + '<h5><strong>Tasks Running:</strong> ' + taskman.tasks.running + '</h5>';
 
     $('#taskman-info').append(html);
+    $('#tm-refresh-info').click( () => taskmanMonitor.showStatus(EWD));
   });
 };
 
 taskmanMonitor.showTasks = function(EWD) {
+  if ($('#taskman-tasks > div.table-responsive').length) {
+    $('#taskman-tasks > div.table-responsive').html('');
+  }
+  else {
+    let html = '';
+    html = html + '<div id="taskman-tasks" class="main col-md-6">';
+    html = html + '<h3 class="sub-header">Taskman Tasks&nbsp;<i id="tm-refresh-tasks" class="fa fa-refresh" aria-hidden="true"></i></h3>';
+    html = html + '  <div class="table-responsive">';
+    html = html + '  </div>';
+    html = html + '</div>';
+    $('#taskman-monitor').append(html);
+    $('#tm-refresh-tasks').click( () => {
+      $('#tm-refresh-tasks').css('opacity', '0.3');
+      taskmanMonitor.showTasks(EWD);
+    });
+  } //else
+
   let html = '';
-  html = html + '<div id="taskman-tasks" class="main col-md-6">';
-  html = html + '<h3 class="sub-header">Taskman Tasks</h3>';
-  html = html + '<div class="table-responsive">';
   html = html + '<table class="table table-striped">';
   html = html + '<thead>';
   html = html + '<tr>';
@@ -121,10 +141,8 @@ taskmanMonitor.showTasks = function(EWD) {
   html = html + '<tbody>';
   html = html + '</tbody>';
   html = html + '</table>';
-  html = html + '</div>';
-  html = html + '</div>';
 
-  $('#taskman-monitor').append(html);
+  $('#taskman-tasks > div.table-responsive').append(html);
 
   let messageObj = {
     service: 'ewd-vista-taskman-monitor',
@@ -133,19 +151,32 @@ taskmanMonitor.showTasks = function(EWD) {
   EWD.send(messageObj, function(responseObj) {
     if (responseObj.finished == false) {
       let task = responseObj.message.task;
-
-      let html = '';
-      html = html + '<tr>';
-      html = html + '<td>' + task.number + '</td>';
-      html = html + '<td>' + (task.fields['0.03'] ? task.fields['0.03'] : task.fields['.03']) +  '</td>';
-      html = html + '<td>' + taskmanMonitor.taskStatus(task.fields['0.1'] ? task.fields['0.1'].split('^')[0] : task.fields['.1'].split('^')[0] ) + '</td>';
-      html = html + '<td>' + vista.horologToExternal(task.fields['0'].split('^')[5]) + '</td>';
-      html = html + '<td>' + vista.horologToExternal(task.fields['0.1'] ? task.fields['0.1'].split('^')[1] : task.fields['.1'].split('^')[1]) + '</td>';
-      html = html + '</tr>';
-
-      $('#taskman-tasks tbody').append(html);
+      taskmanMonitor.addTaskToPage(task);
     }
+
+    $('#tm-refresh-tasks').css('opacity', '1.0');
   });
+};
+
+taskmanMonitor.addTaskToPage = function(task, animate) {
+  let oldrow = $('#taskman-tasks tbody #' + task.number);
+  oldrow.fadeOut('fast');
+  oldrow.remove();
+
+  let html = '';
+  html = html + '<tr id="' + task.number + '">';
+  html = html + '<td>' + task.number + '</td>';
+  html = html + '<td>' + (task.fields['0.03'] ? task.fields['0.03'] : task.fields['.03']) +  '</td>';
+  html = html + '<td>' + taskmanMonitor.taskStatus(task.fields['0.1'] ? task.fields['0.1'].split('^')[0] : task.fields['.1'].split('^')[0] ) + '</td>';
+  html = html + '<td>' + vista.horologToExternal(task.fields['0'].split('^')[5]) + '</td>';
+  html = html + '<td>' + vista.horologToExternal(task.fields['0.1'] ? task.fields['0.1'].split('^')[1] : task.fields['.1'].split('^')[1]) + '</td>';
+  html = html + '</tr>';
+  let row = $(html);
+
+  if (animate) row.hide();
+
+  $('#taskman-tasks tbody').prepend($(row));
+  if (animate) row.fadeIn('slow');
 };
 
 taskmanMonitor.statusCodes = {
@@ -178,4 +209,16 @@ taskmanMonitor.taskStatus = function(code) {
   return status;
 };
 
+taskmanMonitor.setupEvents = function(EWD) {
+  EWD.off('taskmanPush'); // Prevent rebinding the same event
+  EWD.off('taskmanDelete'); // Prevent rebinding the same event
+  EWD.on('taskmanPush', function(responseObj) {
+    taskmanMonitor.addTaskToPage(responseObj.message, true);
+  });
+  EWD.on('taskmanDelete', function(responseObj) {
+    let oldrow = $('#taskman-tasks tbody #' + responseObj.message);
+    oldrow.fadeOut('slow', function() { $(this).remove();});
+  });
+
+};
 /*#sourceMappingURL=vista-taskman-monitor.js */
