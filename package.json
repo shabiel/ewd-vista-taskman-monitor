@@ -20,6 +20,6 @@
     "clientModuleName": "taskmanMonitor",
     "htmlName": "taskman-monitor",
     "sortOrder": "20",
-    "securityKeys": ["XUMGR"]
+    "securityKey": "XUMGR"
   }
 }
