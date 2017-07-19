@@ -2,15 +2,10 @@ var taskmanMonitor = {};
 
 // Load CSS & set up nav
 taskmanMonitor.prep = function(EWD) {
-  $('body').on('click', '#app-taskman-monitor', function() {
-    vista.switchApp('taskman-monitor');
-
-    $('#main-content').append('<div id="taskman-monitor" class="row"></div>');
-
-    taskmanMonitor.showStatus(EWD);
-    taskmanMonitor.showTasks(EWD);
-    taskmanMonitor.setupEvents(EWD);
-  });
+  $('#main-content').append('<div id="taskman-monitor" class="row"></div>');
+  taskmanMonitor.showStatus(EWD);
+  taskmanMonitor.showTasks(EWD);
+  taskmanMonitor.setupEvents(EWD);
 };
 
 taskmanMonitor.showStatus = function(EWD) {
@@ -221,4 +216,3 @@ taskmanMonitor.setupEvents = function(EWD) {
   });
 
 };
-/*#sourceMappingURL=vista-taskman-monitor.js */
