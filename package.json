@@ -1,5 +1,6 @@
 {
   "name": "ewd-vista-taskman-monitor",
+  "engines" : { "node" : ">=6" },
   "version": "1.0.2",
   "description": "EWD VistA: Taskman monitor module",
   "main": "index.js",
