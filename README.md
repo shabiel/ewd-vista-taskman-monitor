@@ -44,4 +44,4 @@ WEB SERVICE: NOTIFICATIONS SERVICE      STATUS: ENABLED
 ```
 
 ### DEMO
-[Demo](demo.gif?raw=true "Demo")
+![Demo](demo.gif)
