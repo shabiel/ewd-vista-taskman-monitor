@@ -100,7 +100,7 @@ taskmanMonitor.showStatus = function(EWD) {
     html = html + '<h5><strong>Tasks Running:</strong> ' + taskman.tasks.running + '</h5>';
 
     $('#taskman-info').append(html);
-    $('#tm-refresh-info').click( () => taskmanMonitor.showStatus(EWD));
+    $('#tm-refresh-info').click(function() {taskmanMonitor.showStatus(EWD); });
   });
 };
 
@@ -116,7 +116,7 @@ taskmanMonitor.showTasks = function(EWD) {
     html = html + '  </div>';
     html = html + '</div>';
     $('#taskman-monitor').append(html);
-    $('#tm-refresh-tasks').click( () => {
+    $('#tm-refresh-tasks').click(function() {
       $('#tm-refresh-tasks').css('opacity', '0.3');
       taskmanMonitor.showTasks(EWD);
     });
